@@ -5,30 +5,13 @@ import LibraryBlock from './components/LibraryBlock';
 
 
 function App() {
- // const { fetching, videos, onRequestTrendVideos, error } = props;
 
   return (
     <div className="App">
       <LibraryBlock />
-<SearchBlock />
+      <SearchBlock />
     </div>
   );
 }
-/*
-const mapStateToProps = state => {
-  return {
-    fetching: state.fetching,
-    videos: state.videos,
-    error: state.error
-  };
-};
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onRequestTrendVideos: () => dispatch({ type: types.API_CALL_REQUEST })
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
-*/
 export default App;

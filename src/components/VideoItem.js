@@ -1,18 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-/*const videoTest = [{
-    id: "NvBshoIkxLc",
-title: "Liverpool vs Atletico Madrid (2-3 AET) | UEFA Champions League highlights",
-thumbnailUrl: "https://i.ytimg.com/vi/NvBshoIkxLc/hqdefault.jpg",
-duration: "PT11M36S",
-definition: "hd",
-saved: false,
-viewCount: "5341432",
-likeCount: "79924",
-dislikeCount: "3889",
-}]
-*/
 const VideoItem = props => {
 const [savedState, setSavedState] = useState(props.saved);
 
@@ -64,7 +52,7 @@ const [savedState, setSavedState] = useState(props.saved);
            </div>
             <div className='video-item__action'>
                 { savedState ? (
-                  <button className="video-item__icon-btn video-item__add-btn"onClick={() => {
+                  <button className="video-item__icon-btn video-item__add-btn" onClick={() => {
                     props.onVideoDelete(props.id);
                     setSavedState(false);
                 }}>  
@@ -85,6 +73,14 @@ const [savedState, setSavedState] = useState(props.saved);
 };
 
 VideoItem.propTypes = {
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    likeCount: PropTypes.string.isRequired,
+    thumbnailUrl: PropTypes.string.isRequired,
+    duration: PropTypes.string.isRequired,
+    onVideoAddToLib: PropTypes.func,
+    onVideoDelete: PropTypes.func,
+    saved: PropTypes.bool.isRequired
 
 };
 

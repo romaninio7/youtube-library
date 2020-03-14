@@ -9,7 +9,7 @@ import { Provider } from "react-redux";
 import logger from 'redux-logger';
 
 import rootReducer from './reducers'
-//import { watcherSagaTrendVideos } from "./sagas/trendVideos";
+
 import rootSaga from './sagas'
 // create the saga middleware
 const sagaMiddleware = createSagaMiddleware();
@@ -34,5 +34,5 @@ ReactDOM.render(
   document.getElementById("root")
 );
 
-//registerServiceWorker();
+
 serviceWorker.unregister();

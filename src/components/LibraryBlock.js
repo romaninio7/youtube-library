@@ -5,19 +5,6 @@ import { connect } from "react-redux";
 import * as types from '../constants/actions';
 import {useDispatch } from "react-redux";
 
-/*
-const videoTest = {
-id: "NvBshoIkxLc",
-title: "Liverpool vs Atletico Madrid (2-3 AET) | UEFA Champions League highlights",
-thumbnailUrl: "https://i.ytimg.com/vi/NvBshoIkxLc/hqdefault.jpg",
-duration: "PT11M36S",
-definition: "hd",
-saved: false,
-viewCount: "5341432",
-likeCount: "79924",
-dislikeCount: "3889",
-}*/
-
 
 const LibraryBlock = (props) => {
   const dispatch = useDispatch();
@@ -60,7 +47,8 @@ const mapStateToProps = state => {
       onRequestLibVideos: () => dispatch({ type: types.API_CALL_LIB_REQUEST })
     };
   };
-  
+
+ 
   export default connect(mapStateToProps, mapDispatchToProps)(LibraryBlock);
 
 
