@@ -6,11 +6,11 @@ import { watcherSagaAddToLib } from './addToLib';
 import { watcherSagaDeleteVideo } from './deleteVideo';
 
 export default function* rootSaga() {
-  yield all([
-    watcherSagaTrendVideos(),
-    watcherSagaLibVideos(),
-    watcherSagaSearchVideos(),
-    watcherSagaAddToLib(),
-    watcherSagaDeleteVideo()
-  ])
+	yield all([
+		watcherSagaTrendVideos(),
+		watcherSagaLibVideos(),
+		watcherSagaSearchVideos(),
+		watcherSagaAddToLib(),
+		watcherSagaDeleteVideo(),
+	]);
 }

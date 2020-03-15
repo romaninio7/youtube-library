@@ -3,8 +3,8 @@ import videos from './videos';
 import libVideos from './libVideos';
 
 const allReducers = combineReducers({
-    videos,
-    libVideos
-})
+	videos,
+	libVideos,
+});
 
 export default allReducers;
