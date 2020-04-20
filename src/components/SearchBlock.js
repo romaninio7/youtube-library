@@ -14,7 +14,7 @@ const SearchBlock = ({
   addVideoToLibrary,
   deleteVideo,
 }) => {
-  const defaultSearch = 'Chopin';
+  const defaultSearch = 'Covid-19 in Italy';
   // Starts fetching all videos after loading
   useEffect(() => {
     fetchStartVideos(defaultSearch);
