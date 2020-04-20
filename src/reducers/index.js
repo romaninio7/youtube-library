@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
-import videos from './videos';
-import libVideos from './libVideos';
+import youtube from './youtube';
+import library from './library';
 
 const allReducers = combineReducers({
-	videos,
-	libVideos,
+  youtube,
+  library,
 });
 
 export default allReducers;

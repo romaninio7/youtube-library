@@ -1,93 +1,90 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
-const VideoItem = props => {
-	const [savedState, setSavedState] = useState(props.saved);
+const VideoItem = (props) => {
+  // Local saved status state
+  const [savedState, setSavedState] = useState(props.isInLibrary);
 
-	function convertISO8601(input) {
-		var reptms = /^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/;
-		var hours = 0,
-			minutes = 0,
-			seconds = 0,
-			time;
+  // Getting useful data from props to form a library video
+  const libraryProps = _.pick(props, [
+    'id',
+    'title',
+    'thumbnail',
+    'publishedAt',
+    'channel',
+  ]);
 
-		if (reptms.test(input)) {
-			var matches = reptms.exec(input);
-			if (matches[3]) {
-				seconds = Number(matches[3]);
-				time = seconds + 's';
-			}
-			if (matches[2]) {
-				minutes = Number(matches[2]);
-				time = minutes + 'm ' + seconds + 's';
-			}
-			if (matches[1]) {
-				hours = Number(matches[1]);
-				time = hours + 'h ' + minutes + 'm ' + seconds + 's';
-			}
-		}
+  const {
+    id,
+    title,
+    publishedAt,
+    thumbnail,
+    channel,
+    addVideoToLibrary,
+    deleteVideo,
+  } = props;
+  return (
+    <div className="video-item">
+      <a href={'https://www.youtube.com/watch?v=' + id} target="_blanck">
+        <div className="video-item__img">
+          <div className="video-item__duration">{getYear(publishedAt)}</div>
 
-		return time;
-	}
-
-	return (
-		<div className="video-item">
-			<a href={'https://www.youtube.com/watch?v=' + props.id} target="_blanck">
-				<div className="video-item__img">
-					<div className="video-item__duration">
-						{convertISO8601(props.duration)}
-					</div>
-
-					<div className="video-item__overlay-container">
-						<img src={props.thumbnailUrl} alt={props.title} />
-						<div className="video-item__overlay-middle">
-							<div className="video-item__overlay-text">
-								<i className="fa fa-thumbs-up"></i> {props.likeCount}
-							</div>
-						</div>
-					</div>
-				</div>
-			</a>
-			<div className="video-item__title">
-				<span>{props.title}</span>
-			</div>
-			<div className="video-item__action">
-				{savedState ? (
-					<button
-						className="video-item__icon-btn video-item__add-btn"
-						onClick={() => {
-							props.onVideoDelete(props.id);
-							setSavedState(false);
-						}}
-					>
-						<div className="video-item__btn-txt">Delete</div>
-					</button>
-				) : (
-					<button
-						className="video-item__icon-btn video-item__add-btn"
-						onClick={() => {
-							props.onVideoAddToLib(props.id);
-							setSavedState(true);
-						}}
-					>
-						<div className="video-item__add-icon"></div>
-						<div className="video-item__btn-txt">Save</div>
-					</button>
-				)}
-			</div>
-		</div>
-	);
+          <div className="video-item__overlay-container">
+            <img src={thumbnail} alt={title} />
+            <div className="video-item__overlay-middle">
+              <div className="video-item__overlay-text">
+                <i className="fa fa-youtube"></i> {channel}
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+      <div className="video-item__title">
+        <span>{title}</span>
+      </div>
+      <div className="video-item__action">
+        {savedState ? (
+          <button
+            className="video-item__icon-btn video-item__add-btn"
+            onClick={() => {
+              deleteVideo(id);
+              setSavedState(false);
+            }}
+          >
+            <div className="video-item__btn-txt">Delete</div>
+          </button>
+        ) : (
+          <button
+            className="video-item__icon-btn video-item__add-btn"
+            onClick={() => {
+              // Dispatching an add video action creater with video data
+              addVideoToLibrary({ ...libraryProps, isInLibrary: true });
+              setSavedState(true);
+            }}
+          >
+            <div className="video-item__add-icon"></div>
+            <div className="video-item__btn-txt">Save</div>
+          </button>
+        )}
+      </div>
+    </div>
+  );
 };
 
 VideoItem.propTypes = {
-	id: PropTypes.string.isRequired,
-	title: PropTypes.string.isRequired,
-	likeCount: PropTypes.string.isRequired,
-	thumbnailUrl: PropTypes.string.isRequired,
-	duration: PropTypes.string.isRequired,
-	onVideoAddToLib: PropTypes.func,
-	onVideoDelete: PropTypes.func,
-	saved: PropTypes.bool.isRequired,
+  id: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  publishedAt: PropTypes.string.isRequired,
+  thumbnail: PropTypes.string.isRequired,
+  channel: PropTypes.string.isRequired,
+  addVideoToLibrary: PropTypes.func,
+  deleteVideo: PropTypes.func.isRequired,
 };
+
+function getYear(d) {
+  const vDate = new Date(d);
+  return vDate.getFullYear();
+}
 
 export default VideoItem;

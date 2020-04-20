@@ -1,75 +1,88 @@
 import React, { useEffect } from 'react';
 import SearchPanel from './SearchPanel';
 import { connect } from 'react-redux';
-import * as types from '../constants/actions';
 import VideoItem from './VideoItem';
 import Loader from './Loader';
-import { useDispatch } from 'react-redux';
+import * as actions from '../actions';
 
-const SearchBlock = props => {
-	const dispatch = useDispatch();
+const SearchBlock = ({
+  videos,
+  fetching,
+  error,
+  fetchStartVideos,
+  fetchSearchedVideos,
+  addVideoToLibrary,
+  deleteVideo,
+}) => {
+  const defaultSearch = 'Chopin';
+  // Starts fetching all videos after loading
+  useEffect(() => {
+    fetchStartVideos(defaultSearch);
+  }, []);
 
-	useEffect(() => {
-		props.onRequestTrendVideos();
-	}, []);
-	const videoAddToLib = id => {
-		dispatch({ type: types.API_ADD_TO_LIB_REQUEST, addId: id });
-	};
+  // Helping function
+  const renderList = (
+    videos,
+    fetching,
+    error,
+    addVideoToLibrary,
+    deleteVideo
+  ) => {
+    // Empty video list
+    if (videos.length === 0 && !fetching) {
+      return (
+        <div className="search-block__error">
+          <span>No videos founded</span>
+        </div>
+      );
 
-	const videoDelete = id => {
-		dispatch({ type: types.API_DELETE_VIDEO_REQUEST, deleteId: id });
-	};
+      // Loading
+    } else if (fetching) {
+      return <Loader />;
 
-	return (
-		<div className="search-block">
-			<SearchPanel />
-			<div className="search-block__videos">
-				{props.videos.items.length > 0 && !props.fetching ? (
-					<>
-						{props.videos.items.map((item, index) => {
-							return (
-								<VideoItem
-									key={index}
-									{...item}
-									onVideoAddToLib={videoAddToLib}
-									onVideoDelete={videoDelete}
-								/>
-							);
-						})}
-					</>
-				) : (
-					<>
-						{(props.error && (
-							<div className="search-block__error">
-								<span>{props.error.toString()}</span>
-							</div>
-						)) ||
-							(props.fetching && <Loader />) ||
-							(props.videos.items.length === 0 && !props.fetching && (
-								<div className="search-block__error">
-									<span>No videos founded</span>
-								</div>
-							))}
-					</>
-				)}
-			</div>
-		</div>
-	);
+      // Shows up the list of videos
+    } else if (videos.length > 0 && !fetching) {
+      return videos.map((item, index) => {
+        return (
+          <VideoItem
+            key={index}
+            {...item}
+            addVideoToLibrary={addVideoToLibrary}
+            deleteVideo={deleteVideo}
+          />
+        );
+      });
+
+      // Shows error if it exists
+    } else if (error) {
+      return (
+        <div className="search-block__error">
+          <span>{error.toString()}</span>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <div className="search-block">
+      <SearchPanel
+        defaultSearch={defaultSearch}
+        onSearch={fetchSearchedVideos}
+      />
+      <div className="search-block__videos">
+        {renderList(videos, fetching, error, addVideoToLibrary, deleteVideo)}
+      </div>
+    </div>
+  );
 };
 
-const mapStateToProps = state => {
-	return {
-		fetching: state.videos.fetching,
-		videos: state.videos.videos,
-		error: state.videos.error,
-	};
+//Getting data from the store
+const mapStateToProps = (state) => {
+  return {
+    fetching: state.youtube.fetching,
+    videos: state.youtube.videos,
+    error: state.youtube.error,
+  };
 };
 
-const mapDispatchToProps = dispatch => {
-	return {
-		onRequestTrendVideos: () => dispatch({ type: types.API_CALL_REQUEST }),
-		onRequestLibVideos: () => dispatch({ type: types.API_CALL_LIB_REQUEST }),
-	};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(SearchBlock);
+export default connect(mapStateToProps, actions)(SearchBlock);

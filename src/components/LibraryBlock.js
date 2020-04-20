@@ -1,86 +1,79 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import VideoItem from './VideoItem';
 import Loader from './Loader';
 import { connect } from 'react-redux';
-import * as types from '../constants/actions';
-import { useDispatch } from 'react-redux';
+import * as actions from '../actions';
 
-const LibraryBlock = props => {
-	const dispatch = useDispatch();
-	const videoDelete = id => {
-		dispatch({ type: types.API_DELETE_VIDEO_REQUEST, deleteId: id });
-	};
+const LibraryBlock = ({ libraryVideos, error, fetching, deleteVideo }) => {
+  // Starting a horizontal scroll listenning after loading
+  useEffect(() => {
+    const el = document.querySelector('#libId');
+    function scrollHorizontally(e) {
+      e = window.event || e;
+      e.preventDefault();
+      el.scrollLeft -= e.wheelDelta || -e.detail;
+    }
+    (function initScroll() {
+      if (!el) {
+        return;
+      }
+      if (el.addEventListener) {
+        el.addEventListener('mousewheel', scrollHorizontally, false);
+        el.addEventListener('DOMMouseScroll', scrollHorizontally, false);
+      }
+    })();
+  }, []);
 
-	useEffect(() => {
-		props.onRequestLibVideos();
+  // Helping function to generate a list of videos
 
-		const el = document.querySelector('#libId');
+  const renderList = (libraryVideos, fetching, error) => {
+    // Empty library
+    if (libraryVideos.length === 0 && !fetching) {
+      return (
+        <div className="library-block__error">
+          <span>Your library is empty</span>
+        </div>
+      );
 
-		function scrollHorizontally(e) {
-			e = window.event || e;
-			e.preventDefault();
-			el.scrollLeft -= e.wheelDelta || -e.detail;
-		}
+      // Loading the videos
+    } else if (fetching) {
+      return (
+        <div className="library-block__loading">
+          <Loader />
+        </div>
+      );
+    }
+    // Show up the videos if loaded
+    else if (libraryVideos.length > 0 && !fetching) {
+      return libraryVideos.map((item, index) => {
+        return <VideoItem key={index} {...item} deleteVideo={deleteVideo} />;
+      });
 
-		(function initScroll() {
-			if (!el) {
-				return;
-			}
+      //Error if exists
+    } else if (error) {
+      return (
+        <div className="library-block__error">
+          <span>{error.toString()}</span>
+        </div>
+      );
+    }
+  };
 
-			if (el.addEventListener) {
-				el.addEventListener('mousewheel', scrollHorizontally, false);
-				el.addEventListener('DOMMouseScroll', scrollHorizontally, false);
-			}
-		})();
-	
-	}, []);
-
-	return (
-		<div className="library-block" id="libId">
-			<h1>Library</h1>
-			{props.libVideos.items.length > 0 && !props.fetching ? (
-				<>
-					{props.libVideos.items.map((item, index) => {
-						return (
-							<VideoItem key={index} {...item} onVideoDelete={videoDelete} />
-						);
-					})}
-				</>
-			) : (
-				<>
-					{(props.error && (
-						<div className="library-block__error">
-							<span>{props.error.toString()}</span>
-						</div>
-					)) ||
-						(props.fetching && (
-							<div className="library-block__loading">
-								<Loader />
-							</div>
-						)) ||
-						(props.libVideos.items.length === 0 && !props.fetching && (
-							<div className="library-block__error">
-								<span>Your library is empty</span>
-							</div>
-						))}
-				</>
-			)}
-		</div>
-	);
+  return (
+    <div className="library-block" id="libId">
+      <h1>Library</h1>
+      {renderList(libraryVideos, fetching, error)}
+    </div>
+  );
 };
 
-const mapStateToProps = state => {
-	return {
-		fetching: state.libVideos.fetching,
-		libVideos: state.libVideos.libVideos,
-		error: state.libVideos.error,
-	};
+// Get data from the store
+const mapStateToProps = (state) => {
+  return {
+    fetching: state.library.fetching,
+    libraryVideos: state.library.libraryVideos,
+    error: state.library.error,
+  };
 };
 
-const mapDispatchToProps = dispatch => {
-	return {
-		onRequestLibVideos: () => dispatch({ type: types.API_CALL_LIB_REQUEST }),
-	};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(LibraryBlock);
+export default connect(mapStateToProps, actions)(LibraryBlock);
